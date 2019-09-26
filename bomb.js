@@ -22,8 +22,12 @@ var wiresToCut = [];
 var timer = document.getElementById('timer');
 var wireBox = document.getElementById('wirebox');
 var resetButton = document.querySelector('button');
+var explode = document.getElementById('explode');
+var yay = document.getElementById('yay');
+var buzz = document.getElementById('buzz');
+var siren = document.getElementById('siren');
+var success = document.getElementById('success');
 
-//TO DO: ADD AUDIO ELEMENTS
 
 
 //EVENT LISTENERS
@@ -37,7 +41,7 @@ wireBox.addEventListener('click', function(e) {
         //if wire is not cut and game is not over...
         //change the image
         e.target.src = `img/cut-${color}-wire.png`
-        //TO DO: PLAY CUT AUDIO
+        buzz.play();
         //set any color clicked to true
         wireState[color] = true;
         //check for correctness
@@ -71,7 +75,7 @@ function init() {
     }
     console.log(wiresToCut);
     resetButton.disabled = true;
-    //TO DO: PLAY THE SIREN
+    siren.play();
     countdown = setInterval(updateClock, 1000);
 }
 
@@ -89,7 +93,8 @@ function reset() {
     clearTimeout(delay);
     clearInterval(countdown);
 
-    //TO DO: STOP PLAYING AUDIO FILES
+    success.pause();
+    success.currentTime = 0;
     init();
 }
 
@@ -105,12 +110,16 @@ function endGame(win) {
     resetButton.disabled = false;
 
     if (win) {
-        console.log(`you saved the city`)
-        timer.classList.add('green')
-        //TO DO: AUDIO FILE
+        console.log(`you saved the city`);
+        timer.classList.add('green');
+        yay.addEventListener('ended', function() {
+            success.play();
+        })
+        yay.play();
     } else {
         console.log(`boom`);
         document.body.classList.add('exploded');
+        explode.play();
     }
 }
 
