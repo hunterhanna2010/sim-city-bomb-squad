@@ -27,11 +27,13 @@ var resetButton = document.querySelector('button');
 
 
 //EVENT LISTENERS
+resetButton.addEventListener('click', reset);
+
 //clicking on the children of the wirebox
 wireBox.addEventListener('click', function(e) {
     //make sure it is NOT already cut using e.target.alt via the "alt" text of the images
     var color = e.target.alt;
-    if (!wireState[color] && !gameOver) {
+    if (!wireState[color] && !gameOver && color) {
         //if wire is not cut and game is not over...
         //change the image
         e.target.src = `img/cut-${color}-wire.png`
@@ -44,13 +46,13 @@ wireBox.addEventListener('click', function(e) {
             //correct wire cut
             console.log(`${color} at index ${wireIndex} was correct`);
             wiresToCut.splice(wireIndex, 1);
-            //TO DO: check for a win here
+            if (checkForWin()) {
+                endGame(true);
+            }
         }   else {
             //incorrect wire cut
             console.log(`${color} at index ${wireIndex} was wrong`);
-            //TO DO: KICKOFF TIME DELAY
-
-
+            delay = setTimeout(endGame, 750, false);
         }
         
     }
@@ -70,7 +72,7 @@ function init() {
     console.log(wiresToCut);
     resetButton.disabled = true;
     //TO DO: PLAY THE SIREN
-    //TO DO: START THE COUNTDOWN
+    countdown = setInterval(updateClock, 1000);
 }
 
 function reset() {
@@ -89,5 +91,34 @@ function reset() {
 
     //TO DO: STOP PLAYING AUDIO FILES
     init();
-
 }
+
+function checkForWin() {
+    //if wires to cut is 0, gameOver is false with a winner
+    return wiresToCut.length ? false : true;
+}
+
+function endGame(win) {
+    clearTimeout(delay);
+    clearInterval(countdown);
+    gameOver = true;
+    resetButton.disabled = false;
+
+    if (win) {
+        console.log(`you saved the city`)
+        timer.classList.add('green')
+        //TO DO: AUDIO FILE
+    } else {
+        console.log(`boom`);
+        document.body.classList.add('exploded');
+    }
+}
+
+function updateClock() {
+    remainingTime--;
+    if (remainingTime <= 0) {
+        endGame(false);
+    }
+    timer.textContent = `0:00:${remainingTime}`;
+}
+init();
